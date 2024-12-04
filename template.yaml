@@ -1,0 +1,80 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  sfn-apigw-example
+
+  Sample SAM Template for sfn-apigw-example
+
+Parameters: 
+  SellPath: 
+    Type: String
+    Default: /chat
+
+Resources:
+  BasicAWSApiGateway:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: Basic AWS Api Gateway
+      StageName: prod
+ 
+Outputs:
+  BasicAWSApiGateway:
+    Description: 'API Gateway endpoint URL for Staging stage for Hello World function'
+    Value: !Sub 'https://${BasicAWSApiGateway}.execute-api.${AWS::Region}.amazonaws.com/prod/rover/'
+  BasicAWSApiGatewayRestApiId:
+    Description: 'API Gateway ARN for Basic AWS API Gateway'
+    Value: !Ref BasicAWSApiGateway
+    Export:
+      Name: BasicAWSApiGateway-RestApiId
+  BasicAWSApiGatewayRootResourceId:
+    Value: !GetAtt BasicAWSApiGateway.RootResourceId
+    Export:
+      Name: BasicAWSApiGateway-RootResourceId
+
+Resources:
+  RoverChatLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: RoverChatLayer
+      Description: Dependencies for Mars Rover chatbot
+      ContentUri: layers/rover_chat/
+      CompatibleRuntimes:
+        - python3.12
+      RetentionPolicy: Retain
+    Metadata:
+      BuildMethod: python3.12
+      BuildProperties:
+        Pipfile: false
+        UsePipenv: false
+        RequirementsFile: requirements.txt
+
+  RoverChatFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/rover_chat/
+      Handler: app.lambda_handler
+      Runtime: python3.12
+      Layers:
+        - !Ref RoverChatLayer
+      Timeout: 120
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /chat
+            Method: POST
+
+  TransactionTable:
+    Type: AWS::Serverless::SimpleTable # More info about SimpleTable Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-simpletable.html
+    Properties:
+      PrimaryKey:
+        Name: Id
+        Type: String
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+
+Outputs:
+  WebEndpoint:
+    Description: "API Gateway endpoint URL for Prod stage"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
