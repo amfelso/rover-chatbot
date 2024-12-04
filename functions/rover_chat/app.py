@@ -3,7 +3,6 @@ import logging
 import os
 import json
 from openai import OpenAI
-from models.requests import ChatRequest
 
 # Load environment variables from .env file
 load_dotenv()
@@ -16,20 +15,16 @@ logger = logging.getLogger(__name__)
 
 def lambda_handler(event, context):
     # Load the post body
-    body = json.loads(event["body"])
-
-    # Validate the body against ChatRequest
     try:
-        ChatRequest(**body)
+        body = json.loads(event["body"])
+        user_prompt = body["user_prompt"]
+        logger.info(f"User prompt: {user_prompt}")
     except Exception as e:
-        logger.error(f"Validation failed: {e}")
+        logger.error(f"Error: {e}")
         return {
             "statusCode": 400,
-            "body": "Bad Request"
+            "body": "Invalid request body"
         }
-
-    user_prompt = body["user_prompt"]
-    logger.info(f"User prompt: {user_prompt}")
 
     # Initialize OpenAI
     client = OpenAI(
