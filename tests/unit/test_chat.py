@@ -33,7 +33,7 @@ def test_chat():
                 'cognitoAuthenticationType': None,
                 'userArn': 'arn:aws:iam::account-id:root',
                 'apiKeyId': 'test-invoke-api-key-id',
-                'userAgent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko)',
+                'userAgent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)',
                 'accountId': 'account-id',
                 'caller': 'account-id',
                 'sourceIp': 'test-invoke-source-ip',
@@ -44,7 +44,7 @@ def test_chat():
             'domainName': 'testPrefix.testDomainName',
             'apiId': 'api-id'
         },
-        'body': '{\n  "user_prompt": "Hi, how are you today?"\n}',
+        'body': '{\n  "user_prompt": "Hello Rover! What did you explore today?"\n}',
         'isBase64Encoded': False
     }
 
