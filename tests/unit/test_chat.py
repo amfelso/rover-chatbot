@@ -1,4 +1,11 @@
 from functions.rover_chat import app
+import json
+from datetime import datetime
+
+
+# Get the current date
+current_date = datetime.now()
+formatted_date = current_date.strftime('%Y-%m-%d')
 
 
 def test_chat():
@@ -44,7 +51,11 @@ def test_chat():
             'domainName': 'testPrefix.testDomainName',
             'apiId': 'api-id'
         },
-        'body': '{\n  "user_prompt": "Hello Rover! What did you explore today?"\n}',
+        'body': json.dumps({
+            "user_prompt": "Hi Rover! What did you do yesterday?",
+            "conversation_id": formatted_date,
+            "earth_date": "2012-08-07"
+        }),
         'isBase64Encoded': False
     }
 

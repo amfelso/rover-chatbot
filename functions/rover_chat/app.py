@@ -6,7 +6,7 @@ from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_community.chat_message_histories import DynamoDBChatMessageHistory
 from langchain_core.runnables.history import RunnableWithMessageHistory
-from helpers import get_relevant_memories, chatbot_prompt
+from functions.rover_chat.helpers import get_relevant_memories, chatbot_prompt
 from datetime import datetime
 
 # Get the current date
