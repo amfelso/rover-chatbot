@@ -8,6 +8,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_community.chat_message_histories import DynamoDBChatMessageHistory
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from helpers import get_relevant_memories, chatbot_prompt
+from openai import RateLimitError
 
 # Get the current date
 current_date = datetime.now()
@@ -19,7 +20,12 @@ OPENAI_API_KEY = os.environ["OPENAI_API_KEY"]
 
 # Define logger
 logger = logging.getLogger()
-logger.setLevel("INFO")
+if not logger.hasHandlers():  # Prevent duplicate handlers during testing
+    handler = logging.StreamHandler()
+    formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+logger.setLevel(logging.INFO)  # Set logging level
 
 # Initialize ChatOpenAI
 chat_model = ChatOpenAI(
@@ -58,18 +64,14 @@ def rover_chatbot(question: str, conversation_id: str, earth_date: str):
     )
     config = {"configurable": {"session_id": conversation_id}}
     logger.info("Running the conversation chain...")
-    try:
-        response = chain_with_history.invoke(
-            {
-                "earth_date": earth_date,
-                "memories": formatted_memories,
-                "question": question
-            },
-            config=config
-        )
-    except RateLimitError as e:
-        logger.error(f"Rate limit error: {e}")
-        raise e
+    response = chain_with_history.invoke(
+        {
+            "earth_date": earth_date,
+            "memories": formatted_memories,
+            "question": question
+        },
+        config=config
+    )
     logger.info("Completed the conversation chain.")
     return response.content
 
