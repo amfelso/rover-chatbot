@@ -19,6 +19,8 @@ Resources:
     Properties:
       Name: Basic AWS Api Gateway
       StageName: prod
+      Auth:
+        DefaultAuthorizer: AWS_IAM
  
 Outputs:
   BasicAWSApiGateway:
