@@ -58,36 +58,51 @@ def rover_chatbot(question: str, conversation_id: str, earth_date: str):
     )
     config = {"configurable": {"session_id": conversation_id}}
     logger.info("Running the conversation chain...")
-    response = chain_with_history.invoke(
-        {
-            "earth_date": earth_date,
-            "memories": formatted_memories,
-            "question": question
-        },
-        config=config
-    )
+    try:
+        response = chain_with_history.invoke(
+            {
+                "earth_date": earth_date,
+                "memories": formatted_memories,
+                "question": question
+            },
+            config=config
+        )
+    except RateLimitError as e:
+        logger.error(f"Rate limit error: {e}")
+        raise e
     logger.info("Completed the conversation chain.")
     return response.content
 
 
 def lambda_handler(event, context):
-    # Load the post body
-    try:
-        body = json.loads(event["body"])
-        user_prompt = body["user_prompt"]
-        logger.info(f"User prompt: {user_prompt}")
-        conversation_id = body["conversation_id"]
-        logger.info(f"Conversation ID: {conversation_id}")
-        earth_date = body["earth_date"]
-        logger.info(f"Earth date: {earth_date}")
-    except Exception as e:
-        logger.error(f"Error: {e}")
+    # Validate post body
+    body = json.loads(event["body"])
+    user_prompt = body["user_prompt"]
+    conversation_id = body["conversation_id"]
+    earth_date = body["earth_date"]
+    if not user_prompt or not conversation_id or not earth_date:
         return {
             "statusCode": 400,
             "body": "Invalid request body"
         }
+    logger.info(f"User prompt: {user_prompt}")
+    logger.info(f"Conversation ID: {conversation_id}")
+    logger.info(f"Earth date: {earth_date}")
 
-    response = rover_chatbot(user_prompt, conversation_id, earth_date)
+    try:
+        response = rover_chatbot(user_prompt, conversation_id, earth_date)
+    except RateLimitError as re:
+        logger.error(f"Rate limit error: {re}")
+        return {
+            "statusCode": 429,
+            "body": "Rate limit exceeded"
+        }
+    except Exception as e:
+        logger.error(f"Error: {e}")
+        return {
+            "statusCode": 500,
+            "body": "Internal server error"
+        }
 
     return {
         "statusCode": 200,
