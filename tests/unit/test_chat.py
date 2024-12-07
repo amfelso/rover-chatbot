@@ -1,63 +1,26 @@
-from functions.rover_chat import app
+from aws_requests_auth.aws_auth import AWSRequestsAuth
 import json
 from datetime import datetime
+import requests
+import boto3
 
+session = boto3.Session()
+credentials = session.get_credentials()
 
-# Get the current date
-current_date = datetime.now()
-formatted_date = current_date.strftime('%Y-%m-%d')
+auth = AWSRequestsAuth(aws_access_key=credentials.access_key,
+                       aws_secret_access_key=credentials.secret_key,
+                       aws_token=credentials.token,
+                       aws_host='tmlg7yfb6l.execute-api.us-east-1.amazonaws.com',  
+                       aws_region='us-east-1',
+                       aws_service='execute-api')
 
 
 def test_chat():
-    input_payload = {
-        'resource': '/chat',
-        'path': '/chat',
-        'httpMethod': 'POST',
-        'headers': None,
-        'multiValueHeaders': None,
-        'queryStringParameters': None,
-        'multiValueQueryStringParameters': None,
-        'pathParameters': None,
-        'stageVariables': None,
-        'requestContext': {
-            'resourceId': 'resource-id',
-            'resourcePath': '/chat',
-            'httpMethod': 'POST',
-            'extendedRequestId': 'extended-request-id',
-            'requestTime': '04/Dec/2024:09:58:01 +0000',
-            'path': '/chat',
-            'accountId': 'account-id',
-            'protocol': 'HTTP/1.1',
-            'stage': 'test-invoke-stage',
-            'domainPrefix': 'testPrefix',
-            'requestTimeEpoch': 1733306281143,
-            'requestId': 'request-id',
-            'identity': {
-                'cognitoIdentityPoolId': None,
-                'cognitoIdentityId': None,
-                'apiKey': 'test-invoke-api-key',
-                'principalOrgId': None,
-                'cognitoAuthenticationType': None,
-                'userArn': 'arn:aws:iam::account-id:root',
-                'apiKeyId': 'test-invoke-api-key-id',
-                'userAgent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)',
-                'accountId': 'account-id',
-                'caller': 'account-id',
-                'sourceIp': 'test-invoke-source-ip',
-                'accessKey': 'access-key',
-                'cognitoAuthenticationProvider': None,
-                'user': 'account-id'
-            },
-            'domainName': 'testPrefix.testDomainName',
-            'apiId': 'api-id'
-        },
-        'body': json.dumps({
-            "user_prompt": "Hi Rover! What did you do yesterday?",
-            "conversation_id": formatted_date,
-            "earth_date": "2012-08-07"
-        }),
-        'isBase64Encoded': False
+    payload = {
+        "user_prompt": "Hi Rover! How are you?",
+        "conversation_id": "test",
+        "earth_date": "2012-08-06"
     }
 
-    data = app.lambda_handler(input_payload, "")
-    assert data["statusCode"] == 200
+    response = requests.post('https://tmlg7yfb6l.execute-api.us-east-1.amazonaws.com/Prod/chat', auth=auth, data=json.dumps(payload))
+    assert response.status_code == 200
