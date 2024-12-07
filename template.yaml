@@ -5,10 +5,13 @@ Description: >
 
   Sample SAM Template for sfn-apigw-example
 
-Parameters: 
-  SellPath: 
+Parameters:
+  PineconeApiKey:
     Type: String
-    Default: /chat
+    Description: API Key for Pinecone
+  OpenAiApiKey:
+    Type: String
+    Description: API Key for OpenAI
 
 Resources:
   BasicAWSApiGateway:
@@ -16,6 +19,8 @@ Resources:
     Properties:
       Name: Basic AWS Api Gateway
       StageName: prod
+      Auth:
+        DefaultAuthorizer: AWS_IAM
  
 Outputs:
   BasicAWSApiGateway:
@@ -39,10 +44,10 @@ Resources:
       Description: Dependencies for Mars Rover chatbot
       ContentUri: layers/rover_chat/
       CompatibleRuntimes:
-        - python3.12
+        - python3.9
       RetentionPolicy: Retain
     Metadata:
-      BuildMethod: python3.12
+      BuildMethod: python3.9
       BuildProperties:
         Pipfile: false
         UsePipenv: false
@@ -53,7 +58,7 @@ Resources:
     Properties:
       CodeUri: functions/rover_chat/
       Handler: app.lambda_handler
-      Runtime: python3.12
+      Runtime: python3.9
       Layers:
         - !Ref RoverChatLayer
       Timeout: 120
@@ -63,12 +68,26 @@ Resources:
           Properties:
             Path: /chat
             Method: POST
+      Environment:
+        Variables:
+          DYNAMODB_TABLE: !Ref ChatHistoryTable
+          PINECONE_API_KEY: !Ref PineconeApiKey
+          OPENAI_API_KEY: !Ref OpenAiApiKey
+      Policies:
+      - Statement:
+        - Sid: ddbPolicy
+          Effect: Allow
+          Action:
+          - dynamodb:PutItem
+          - dynamodb:GetItem
+          Resource: '*'
 
-  TransactionTable:
+
+  ChatHistoryTable:
     Type: AWS::Serverless::SimpleTable # More info about SimpleTable Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-simpletable.html
     Properties:
       PrimaryKey:
-        Name: Id
+        Name: SessionId
         Type: String
       ProvisionedThroughput:
         ReadCapacityUnits: 1
