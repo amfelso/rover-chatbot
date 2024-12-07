@@ -78,9 +78,8 @@ Resources:
         - Sid: ddbPolicy
           Effect: Allow
           Action:
-          - ddb:PutItem
-          - ddb:UpdateItem
-          - ddb:GetItem
+          - dynamodb:PutItem
+          - dynamodb:GetItem
           Resource: '*'
 
 
