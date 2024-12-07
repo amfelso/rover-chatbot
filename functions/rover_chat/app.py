@@ -18,11 +18,8 @@ load_dotenv()
 OPENAI_API_KEY = os.environ["OPENAI_API_KEY"]
 
 # Define logger
-logging.basicConfig(level=logging.INFO,
-                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-logging.getLogger("pinecone_plugin_interface.logging").setLevel(logging.WARNING)
-logging.getLogger("httpx").setLevel(logging.WARNING)
-logger = logging.getLogger(__name__)
+logger = logging.getLogger()
+logger.setLevel("INFO")
 
 # Initialize ChatOpenAI
 chat_model = ChatOpenAI(
