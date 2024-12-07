@@ -21,7 +21,7 @@ The Rover Chatbot is an AWS-based application that enables users to interact wit
 
 ### **Key Resources**
 1. **Lambda Functions**:
-   - **ChatProcessor**: Processes user input and generates responses. Located in [functions/rover_chat/app.py](functions/rover_chat/app.py).
+   - **RoverChatFunction**: Processes user input and generates responses. Located in [functions/rover_chat/app.py](functions/rover_chat/app.py).
 2. **Lambda Layer**:
    - Contains shared dependencies for efficient deployment. Located in [layers/rover_chat/requirements.txt](layers/rover_chat/requirements.txt).
 3. **API Gateway**:
