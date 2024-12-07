@@ -1,7 +1,7 @@
 # Rover Chatbot
 
 ![DEV Workflow](https://github.com/amfelso/rover-chatbot/actions/workflows/Develop.yml/badge.svg)
-![PROD Workflow](https://github.com/amfelso/rover-chatbot/actions/workflows/Release.yml)
+![PROD Workflow](https://github.com/amfelso/rover-chatbot/actions/workflows/Release.yml/badge.svg)
 
 The Rover Chatbot is an AWS-based application that enables users to interact with a conversational Mars rover assistant. It uses AWS Lambda, API Gateway, and DynamoDB to process chat requests, manage conversational memory, and respond dynamically using GPT-powered logic.
 
