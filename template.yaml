@@ -5,10 +5,13 @@ Description: >
 
   Sample SAM Template for sfn-apigw-example
 
-Parameters: 
-  SellPath: 
+Parameters:
+  PineconeApiKey:
     Type: String
-    Default: /chat
+    Description: API Key for Pinecone
+  OpenAiApiKey:
+    Type: String
+    Description: API Key for OpenAI
 
 Resources:
   BasicAWSApiGateway:
@@ -63,6 +66,20 @@ Resources:
           Properties:
             Path: /chat
             Method: POST
+            Environment:
+      Variables:
+          PINECONE_API_KEY: !Ref PineconeApiKey
+          OPENAI_API_KEY: !Ref OpenAiApiKey
+      Policies:
+      - Statement:
+        - Sid: ddbPolicy
+          Effect: Allow
+          Action:
+          - ddb:PutItem
+          - ddb:UpdateItem
+          - ddb:GetItem
+          Resource: '*'
+
 
   TransactionTable:
     Type: AWS::Serverless::SimpleTable # More info about SimpleTable Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-simpletable.html
