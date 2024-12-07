@@ -50,7 +50,7 @@ The Rover Chatbot is an AWS-based application that enables users to interact wit
    ```bash
    python3 -m venv .venv
    source .venv/bin/activate
-   pip install -r requirements.txt
+   pip install -r layers/rover_chat/requirements.txt
    ```
 
 3. **Run SAM Build**:
