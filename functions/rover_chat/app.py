@@ -1,13 +1,13 @@
 import json
 import logging
 import os
+from datetime import datetime
 from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_community.chat_message_histories import DynamoDBChatMessageHistory
 from langchain_core.runnables.history import RunnableWithMessageHistory
-from functions.rover_chat.helpers import get_relevant_memories, chatbot_prompt
-from datetime import datetime
+from helpers import get_relevant_memories, chatbot_prompt
 
 # Get the current date
 current_date = datetime.now()
@@ -54,7 +54,7 @@ def rover_chatbot(question: str, conversation_id: str, earth_date: str):
     chain_with_history = RunnableWithMessageHistory(
         chain,
         lambda session_id: DynamoDBChatMessageHistory(
-            table_name="SessionTable", session_id=session_id
+            table_name=os.environ["DYNAMODB_TABLE"], session_id=session_id
         ),
         input_messages_key="question",
         history_messages_key="history",

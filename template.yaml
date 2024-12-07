@@ -66,8 +66,9 @@ Resources:
           Properties:
             Path: /chat
             Method: POST
-            Environment:
-      Variables:
+      Environment:
+        Variables:
+          DYNAMODB_TABLE: !Ref ChatHistoryTable
           PINECONE_API_KEY: !Ref PineconeApiKey
           OPENAI_API_KEY: !Ref OpenAiApiKey
       Policies:
@@ -81,11 +82,11 @@ Resources:
           Resource: '*'
 
 
-  TransactionTable:
+  ChatHistoryTable:
     Type: AWS::Serverless::SimpleTable # More info about SimpleTable Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-simpletable.html
     Properties:
       PrimaryKey:
-        Name: Id
+        Name: SessionId
         Type: String
       ProvisionedThroughput:
         ReadCapacityUnits: 1

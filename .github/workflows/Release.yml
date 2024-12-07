@@ -26,7 +26,7 @@ jobs:
                 sam deploy \
                   --no-confirm-changeset \
                   --no-fail-on-empty-changeset \
-                  --stack-name mars-image-pipeline \
+                  --stack-name rover-chatbot \
                   --s3-bucket sam-assets-12032024 \
                   --capabilities CAPABILITY_IAM \
                   --region us-east-1 \
