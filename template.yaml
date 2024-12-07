@@ -44,10 +44,10 @@ Resources:
       Description: Dependencies for Mars Rover chatbot
       ContentUri: layers/rover_chat/
       CompatibleRuntimes:
-        - python3.12
+        - python3.9
       RetentionPolicy: Retain
     Metadata:
-      BuildMethod: python3.12
+      BuildMethod: python3.9
       BuildProperties:
         Pipfile: false
         UsePipenv: false
@@ -58,7 +58,7 @@ Resources:
     Properties:
       CodeUri: functions/rover_chat/
       Handler: app.lambda_handler
-      Runtime: python3.12
+      Runtime: python3.9
       Layers:
         - !Ref RoverChatLayer
       Timeout: 120
