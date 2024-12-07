@@ -34,7 +34,7 @@ The Rover Chatbot is an AWS-based application that enables users to interact wit
 ## **Getting Started**
 
 ### **Prerequisites**
-- Python 3.12
+- Python 3.9
 - AWS SAM CLI
 - AWS Account
 
