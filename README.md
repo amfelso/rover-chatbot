@@ -42,7 +42,7 @@ The Rover Chatbot is an AWS-based application that enables users to interact wit
 
 1. **Clone the Repository**:
    ```bash
-   git clone https://github.com/your-repo/rover-chatbot.git
+   git clone https://github.com/amfelso/rover-chatbot.git
    cd rover-chatbot
    ```
 
