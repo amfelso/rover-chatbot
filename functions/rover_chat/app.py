@@ -3,11 +3,10 @@ import logging
 import os
 from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.prompts import ChatPromptTemplate
 from langchain_community.chat_message_histories import DynamoDBChatMessageHistory
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from helpers import get_relevant_memories, chatbot_prompt
-import langchain
 from datetime import datetime
 
 # Get the current date
@@ -30,6 +29,7 @@ chat_model = ChatOpenAI(
     model="gpt-4",
     openai_api_key=OPENAI_API_KEY
 )
+
 
 def rover_chatbot(question: str, conversation_id: str, earth_date: str):
     """Interact with the Rover chatbot using LangChain."""
