@@ -21,9 +21,9 @@ The Rover Chatbot is an AWS-based application that enables users to interact wit
 
 ### **Key Resources**
 1. **Lambda Functions**:
-   - **ChatProcessor**: Processes user input and generates responses.
+   - **RoverChatFunction**: Processes user input and generates responses. Located in [functions/rover_chat/app.py](functions/rover_chat/app.py).
 2. **Lambda Layer**:
-   - Contains shared dependencies for efficient deployment.
+   - Contains shared dependencies for efficient deployment. Located in [layers/rover_chat/requirements.txt](layers/rover_chat/requirements.txt).
 3. **API Gateway**:
    - **Endpoint**: `/chat` (POST)
 4. **DynamoDB Table**:
@@ -34,7 +34,7 @@ The Rover Chatbot is an AWS-based application that enables users to interact wit
 ## **Getting Started**
 
 ### **Prerequisites**
-- Python 3.12
+- Python 3.9
 - AWS SAM CLI
 - AWS Account
 
@@ -42,7 +42,7 @@ The Rover Chatbot is an AWS-based application that enables users to interact wit
 
 1. **Clone the Repository**:
    ```bash
-   git clone https://github.com/your-repo/rover-chatbot.git
+   git clone https://github.com/amfelso/rover-chatbot.git
    cd rover-chatbot
    ```
 
@@ -50,7 +50,7 @@ The Rover Chatbot is an AWS-based application that enables users to interact wit
    ```bash
    python3 -m venv .venv
    source .venv/bin/activate
-   pip install -r requirements.txt
+   pip install -r layers/rover_chat/requirements.txt
    ```
 
 3. **Run SAM Build**:
@@ -74,8 +74,9 @@ The Rover Chatbot is an AWS-based application that enables users to interact wit
   - Payload:
     ```json
     {
-      "user_id": "12345",
-      "message": "What did you explore today?"
+      "user_prompt": "Hi Rover! How are you?",
+      "conversation_id": "test",
+      "earth_date": "2012-08-06"
     }
     ```
 
@@ -116,19 +117,25 @@ This repository includes automated workflows for:
 ```
 rover-chatbot/
 ├── README.md
-├── samconfig.toml               # SAM configuration file
 ├── template.yaml                # AWS SAM template
-├── requirements.txt             # Python dependencies
-├── app/                         # Lambda function code
-│   ├── main.py                  # ChatProcessor Lambda handler
-│   └── utils.py                 # Utility functions
+├── .gitignore                   # Git ignore file
+├── .github/                     # GitHub Actions workflows
+│   ├── workflows/
+│   │   ├── Develop.yml
+│   │   └── Release.yml
+├── functions/                   # Lambda function code
+│   ├── rover_chat/
+│   │   ├── __init__.py
+│   │   ├── app.py               # ChatProcessor Lambda handler
+│   │   ├── helpers.py           # Helper functions
 ├── layers/                      # Lambda layer for shared dependencies
-│   ├── requirements.txt
-│   └── ...
+│   ├── rover_chat/
+│   │   ├── requirements.txt
 ├── tests/                       # Unit tests
 │   ├── unit/
-│   ├── integration/
-│   └── ...
+│   │   ├── __init__.py
+│   │   ├── test_chat.py
+│   ├── __init__.py
 ```
 
 ---
