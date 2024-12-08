@@ -5,6 +5,13 @@ Description: >
 
   Sample SAM Template for sfn-apigw-example
 
+Globals:
+  Api:
+    Cors:
+      AllowMethods: "'GET,POST,OPTIONS'"
+      AllowHeaders: "'content-type'"
+      AllowOrigin: "'*'"
+
 Parameters:
   PineconeApiKey:
     Type: String
@@ -21,6 +28,7 @@ Resources:
       StageName: prod
       Auth:
         DefaultAuthorizer: AWS_IAM
+      
  
 Outputs:
   BasicAWSApiGateway:
