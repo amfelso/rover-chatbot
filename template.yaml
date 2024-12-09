@@ -89,7 +89,37 @@ Resources:
           - dynamodb:PutItem
           - dynamodb:GetItem
           Resource: '*'
-
+  
+  GetLogsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/get_logs/
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Layers:
+        - !Ref RoverChatLayer
+      Timeout: 120
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /logs
+            Method: GET
+      Environment:
+        Variables:
+          DYNAMODB_TABLE: !Ref ChatHistoryTable
+      Policies:
+      - Statement:
+        - Sid: ddbPolicy
+          Effect: Allow
+          Action:
+          - dynamodb:GetItem
+          Resource: '*'
+        - Sid: s3Policy
+          Effect: Allow
+          Action:
+          - s3:GetObject
+          Resource: '*'
 
   ChatHistoryTable:
     Type: AWS::Serverless::SimpleTable # More info about SimpleTable Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-simpletable.html
