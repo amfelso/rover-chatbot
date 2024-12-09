@@ -24,6 +24,27 @@ if not logger.hasHandlers():  # Prevent duplicate handlers during testing
 logger.setLevel(logging.INFO)  # Set logging level
 
 
+def filter_memory(memory: str):
+    # Get the Features, Description, Speculation, and Reflection sections from memory text
+    memory_lines = memory.split("\n")
+    features, description, speculation, reflection = None, None, None, None
+    for i, line in enumerate(memory_lines):
+        line = line.strip()
+        logger.info(f"Line {i}: {line}")
+        if line.startswith("- Features: "):
+            features = line.replace("- Features: ", "").strip()
+        elif line.startswith("- Description: "):
+            description = line.replace("- Description: ", "").strip()
+        elif line.startswith("- Speculation: "):
+            speculation = line.replace("- Speculation: ", "").strip()
+        elif line.startswith("- Reflection: "):
+            reflection = line.replace("- Reflection: ", "").strip()
+    if not features or not description or not speculation or not reflection:
+        logger.warning("Memory text does not contain all sections.")
+    return {"Features": features, "Description": description,
+            "Speculation": speculation, "Reflection": reflection}
+
+
 def fetch_memory_text_boto3(s3_url):
     """
     Fetch the content of a text file from an S3 URL using boto3.
@@ -94,7 +115,8 @@ def lambda_handler(event, context):
         for s3_url in urls:
             response = fetch_memory_text_boto3(s3_url)
             if response:
-                memories.append(response)
+                filtered_response = filter_memory(response)
+                memories.append(filtered_response)
 
         # Create the response in format [{"img_src": "url", "memory": "text"}]
         response = []
@@ -135,8 +157,8 @@ if __name__ == "__main__":
         "httpMethod": "GET",
         "headers": None,
         "multiValueHeaders": None,
-        "queryStringParameters": {"earth_date": "2012-08-12"},
-        "multiValueQueryStringParameters": {"earth_date": ["2012-08-12"]},
+        "queryStringParameters": {"earth_date": "2012-08-09"},
+        "multiValueQueryStringParameters": {"earth_date": ["2012-08-09"]},
         "pathParameters": None,
         "stageVariables": None,
         "requestContext": {
