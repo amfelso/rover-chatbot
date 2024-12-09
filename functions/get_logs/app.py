@@ -72,12 +72,24 @@ def lambda_handler(event, context):
         # Get the logs from the pipeline table in DynamoDB for the given earth date
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table(pipeline_table)
-        response = table.get_item(Key={"EarthDate": earth_date})["Item"]
-        photos = [x["img_src"] for x in response.get("Lambda1__FetchImages")["output"]]
+        response = table.get_item(Key={"EarthDate": earth_date}).get("Item")
+        if not response:
+            logger.warning(f"No logs found for the given date.")
+            return {
+                "statusCode": 200,
+                "headers": {
+                    "Access-Control-Allow-Headers": "Content-Type",
+                    "Access-Control-Allow-Origin": "*",
+                    "Access-Control-Allow-Methods": "GET",
+                },
+                "body": json.dumps({"logs": []}),
+            }
+
+        photos = [x["img_src"] for x in response.get("Lambda1__FetchImages").get("output", [])]
         logger.info(f"Photos: {photos}")
 
         memories = []
-        urls = response.get("Lambda2__GenerateMemories")["output"]
+        urls = response.get("Lambda2__GenerateMemories").get("output", [])
         logger.info(f"Memory URLs: {urls}")
         for s3_url in urls:
             response = fetch_memory_text_boto3(s3_url)
@@ -123,8 +135,8 @@ if __name__ == "__main__":
         "httpMethod": "GET",
         "headers": None,
         "multiValueHeaders": None,
-        "queryStringParameters": {"earth_date": "2012-08-09"},
-        "multiValueQueryStringParameters": {"earth_date": ["2012-08-09"]},
+        "queryStringParameters": {"earth_date": "2012-08-12"},
+        "multiValueQueryStringParameters": {"earth_date": ["2012-08-12"]},
         "pathParameters": None,
         "stageVariables": None,
         "requestContext": {
