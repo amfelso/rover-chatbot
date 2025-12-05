@@ -21,30 +21,6 @@ Parameters:
     Description: API Key for OpenAI
 
 Resources:
-  BasicAWSApiGateway:
-    Type: AWS::Serverless::Api
-    Properties:
-      Name: Basic AWS Api Gateway
-      StageName: prod
-      Auth:
-        DefaultAuthorizer: AWS_IAM
-      
- 
-Outputs:
-  BasicAWSApiGateway:
-    Description: 'API Gateway endpoint URL for Staging stage for Hello World function'
-    Value: !Sub 'https://${BasicAWSApiGateway}.execute-api.${AWS::Region}.amazonaws.com/prod/rover/'
-  BasicAWSApiGatewayRestApiId:
-    Description: 'API Gateway ARN for Basic AWS API Gateway'
-    Value: !Ref BasicAWSApiGateway
-    Export:
-      Name: BasicAWSApiGateway-RestApiId
-  BasicAWSApiGatewayRootResourceId:
-    Value: !GetAtt BasicAWSApiGateway.RootResourceId
-    Export:
-      Name: BasicAWSApiGateway-RootResourceId
-
-Resources:
   RoverChatLayer:
     Type: AWS::Serverless::LayerVersion
     Properties:
@@ -52,10 +28,10 @@ Resources:
       Description: Dependencies for Mars Rover chatbot
       ContentUri: layers/rover_chat/
       CompatibleRuntimes:
-        - python3.9
+        - python3.13
       RetentionPolicy: Retain
     Metadata:
-      BuildMethod: python3.9
+      BuildMethod: python3.13
       BuildProperties:
         Pipfile: false
         UsePipenv: false
@@ -66,7 +42,7 @@ Resources:
     Properties:
       CodeUri: functions/rover_chat/
       Handler: app.lambda_handler
-      Runtime: python3.9
+      Runtime: python3.13
       Layers:
         - !Ref RoverChatLayer
       Timeout: 120
@@ -76,26 +52,26 @@ Resources:
           Properties:
             Path: /chat
             Method: POST
+            RestApiId: !Ref BasicAWSApiGateway
       Environment:
         Variables:
-          DYNAMODB_TABLE: !Ref ChatHistoryTable
           PINECONE_API_KEY: !Ref PineconeApiKey
           OPENAI_API_KEY: !Ref OpenAiApiKey
       Policies:
-      - Statement:
-        - Sid: ddbPolicy
-          Effect: Allow
-          Action:
-          - dynamodb:PutItem
-          - dynamodb:GetItem
-          Resource: '*'
-  
+        - Statement:
+            - Sid: ddbPolicy
+              Effect: Allow
+              Action:
+                - dynamodb:PutItem
+                - dynamodb:GetItem
+              Resource: "*"
+
   GetLogsFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: functions/get_logs/
       Handler: app.lambda_handler
-      Runtime: python3.9
+      Runtime: python3.13
       Layers:
         - !Ref RoverChatLayer
       Timeout: 120
@@ -105,25 +81,24 @@ Resources:
           Properties:
             Path: /logs
             Method: GET
-      Environment:
-        Variables:
-          DYNAMODB_TABLE: !Ref ChatHistoryTable
+            RestApiId: !Ref BasicAWSApiGateway
       Policies:
-      - Statement:
-        - Sid: ddbPolicy
-          Effect: Allow
-          Action:
-          - dynamodb:GetItem
-          Resource: '*'
-        - Sid: s3Policy
-          Effect: Allow
-          Action:
-          - s3:GetObject
-          Resource: '*'
+        - Statement:
+            - Sid: ddbPolicy
+              Effect: Allow
+              Action:
+                - dynamodb:GetItem
+              Resource: "*"
+            - Sid: s3Policy
+              Effect: Allow
+              Action:
+                - s3:GetObject
+              Resource: "*"
 
   ChatHistoryTable:
     Type: AWS::Serverless::SimpleTable # More info about SimpleTable Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-simpletable.html
     Properties:
+      TableName: ChatHistoryTable
       PrimaryKey:
         Name: SessionId
         Type: String
@@ -131,7 +106,15 @@ Resources:
         ReadCapacityUnits: 1
         WriteCapacityUnits: 1
 
+  BasicAWSApiGateway:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: Basic AWS Api Gateway
+      StageName: prod
+      Auth:
+        DefaultAuthorizer: AWS_IAM
+
 Outputs:
   WebEndpoint:
     Description: "API Gateway endpoint URL for Prod stage"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
+    Value: !Sub "https://${BasicAWSApiGateway}.execute-api.${AWS::Region}.amazonaws.com/prod/"
