@@ -52,6 +52,7 @@ Resources:
           Properties:
             Path: /chat
             Method: POST
+            RestApiId: !Ref BasicAWSApiGateway
       Environment:
         Variables:
           PINECONE_API_KEY: !Ref PineconeApiKey
@@ -80,6 +81,7 @@ Resources:
           Properties:
             Path: /logs
             Method: GET
+            RestApiId: !Ref BasicAWSApiGateway
       Policies:
         - Statement:
             - Sid: ddbPolicy
@@ -115,4 +117,4 @@ Resources:
 Outputs:
   WebEndpoint:
     Description: "API Gateway endpoint URL for Prod stage"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
+    Value: !Sub "https://${BasicAWSApiGateway}.execute-api.${AWS::Region}.amazonaws.com/prod/"

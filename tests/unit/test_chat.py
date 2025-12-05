@@ -1,26 +1,13 @@
-from aws_requests_auth.aws_auth import AWSRequestsAuth
-import json
-import requests
-import boto3
-
-session = boto3.Session()
-credentials = session.get_credentials()
-
-auth = AWSRequestsAuth(aws_access_key=credentials.access_key,
-                       aws_secret_access_key=credentials.secret_key,
-                       aws_token=credentials.token,
-                       aws_host='tmlg7yfb6l.execute-api.us-east-1.amazonaws.com',
-                       aws_region='us-east-1',
-                       aws_service='execute-api')
+from functions.rover_chat.helpers import chatbot_prompt
 
 
-def test_chat():
-    payload = {
-        "user_prompt": "Hi Rover! How are you?",
-        "conversation_id": "test",
-        "earth_date": "2012-08-06"
-    }
-
-    response = requests.post('https://tmlg7yfb6l.execute-api.us-east-1.amazonaws.com/Prod/chat',
-                              auth=auth, data=json.dumps(payload))
-    assert response.status_code == 200
+def test_chatbot_prompt_formatting():
+    earth_date = "2012-08-06"
+    memories = "Found layered rocks."
+    history = "User: What did you see today?"
+    prompt = chatbot_prompt.format(earth_date=earth_date, memories=memories, history=history)
+    assert earth_date in prompt
+    assert memories in prompt
+    assert history in prompt
+    assert "Curiosity" in prompt
+    assert "Mars" in prompt
