@@ -57,7 +57,7 @@ def rover_chatbot(question: str, conversation_id: str, earth_date: str):
     chain_with_history = RunnableWithMessageHistory(
         chain,
         lambda session_id: DynamoDBChatMessageHistory(
-            table_name=os.environ["DYNAMODB_TABLE"], session_id=session_id
+            table_name="ChatHistoryTable", session_id=session_id
         ),
         input_messages_key="question",
         history_messages_key="history",
@@ -86,7 +86,7 @@ def lambda_handler(event, context):
         return {
             "statusCode": 400,
             "headers": {
-                "Access-Control-Allow-Headers" : "Content-Type",
+                "Access-Control-Allow-Headers": "Content-Type",
                 "Access-Control-Allow-Origin": "*",
                 "Access-Control-Allow-Methods": "POST"
             },
@@ -103,7 +103,7 @@ def lambda_handler(event, context):
         return {
             "statusCode": 429,
             "headers": {
-                "Access-Control-Allow-Headers" : "Content-Type",
+                "Access-Control-Allow-Headers": "Content-Type",
                 "Access-Control-Allow-Origin": "*",
                 "Access-Control-Allow-Methods": "POST"
             },
@@ -114,7 +114,7 @@ def lambda_handler(event, context):
         return {
             "statusCode": 500,
             "headers": {
-                "Access-Control-Allow-Headers" : "Content-Type",
+                "Access-Control-Allow-Headers": "Content-Type",
                 "Access-Control-Allow-Origin": "*",
                 "Access-Control-Allow-Methods": "POST"
             },
@@ -123,8 +123,8 @@ def lambda_handler(event, context):
 
     return {
         "statusCode": 200,
-         "headers": {
-            "Access-Control-Allow-Headers" : "Content-Type",
+        "headers": {
+            "Access-Control-Allow-Headers": "Content-Type",
             "Access-Control-Allow-Origin": "*",
             "Access-Control-Allow-Methods": "POST"
         },
