@@ -35,7 +35,7 @@ langgraph==1.0.4
 langgraph-checkpoint==3.0.1
 langgraph-prebuilt==1.0.5
 langgraph-sdk==0.2.12
-langsmith==0.4.54
+langsmith==0.6.3
 marshmallow==3.26.1
 mccabe==0.7.0
 multidict==6.7.0
