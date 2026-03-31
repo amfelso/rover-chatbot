@@ -36,7 +36,7 @@ langgraph-checkpoint==4.0.0
 langgraph-prebuilt==1.0.5
 langgraph-sdk==0.2.12
 langsmith==0.6.3
-marshmallow==3.26.1
+marshmallow==3.26.2
 mccabe==0.7.0
 multidict==6.7.0
 mypy_extensions==1.1.0
